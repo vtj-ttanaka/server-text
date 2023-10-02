@@ -10,8 +10,6 @@ on:
 jobs:
   build-pdf:
     runs-on: ubuntu-latest
-    env:
-      output: guide.pdf
     steps:
       - uses: actions/checkout@v3
       - id: chapters
@@ -19,7 +17,7 @@ jobs:
       - uses: docker://ghcr.io/vtj-ttanaka/server-text:latest
         with:
           args: >-
-            -o $output
+            -o guide.pdf
             -N
             --toc
             --toc-depth=3
@@ -33,5 +31,5 @@ jobs:
             ${{ steps.chapters.outpus.list }}
       - uses: actions/upload-artifact@v3
         with:
-          name: $output
-          path: $output
+          name: guide.pdf
+          path: guide.pdf
