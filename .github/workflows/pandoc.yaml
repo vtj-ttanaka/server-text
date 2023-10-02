@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - id: list-files
+        run: echo "chapter=$(ls -1 Chapter*.md | sort -V | tr '\n' ' ' | sed 's/ $//')" >> "$GITHUB_OUTPUT"
       - uses: docker://ghcr.io/vtj-ttanaka/server-text:latest
         with:
           args: >-
@@ -26,7 +28,7 @@ jobs:
             -V documentClass=ltjarticle
             -V mainfont=TakaoPGothic
             --pdf-engine=lualatex
-            Chapter*.md
+            ${{ steps.list-files.outputs.chapter }}
       - uses: actions/upload-artifact@v3
         with:
           name: guide.pdf
