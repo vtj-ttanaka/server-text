@@ -1,0 +1,45 @@
+name: pandoc
+
+on:
+  push:
+    paths:
+      - Chapter*.md
+      - listing.tex
+      - .github/workflows/pandoc.yaml
+
+jobs:
+  markdown_files:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: matrix
+        run: echo -E "value=[$(ls -Qm Chapter*.md | sed 's/\.md//g' | tr -d ' \n')]" >> "$GITHUB_OUTPUT"
+  build-pdf:
+    needs: markdown_files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        value: ${{ fromJson(needs.markdown_files.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker://ghcr.io/virtualtech-devops/md2pdf-demo:latest
+        with:
+          args: >-
+            -o ${{ matrix.value }}.pdf
+            -N
+            --toc
+            --toc-depth=3
+            -F pandoc-crossref
+            -H listing.tex
+            --listings
+            --highlight-style=tango
+            -V documentClass=ltjarticle
+            -V mainfont=TakaoPGothic
+            --pdf-engine=lualatex
+            ${{ matrix.value }}.md
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.value }}.pdf
+          path: ${{ matrix.value }}.pdf
