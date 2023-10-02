@@ -14,7 +14,8 @@ FROM pandoc/extra:edge-ubuntu
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y fonts-takao
+    && apt-get install -y fonts-takao fonts-ipafont \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=0 /tmp/fonts/ /usr/local/share/fonts
 RUN fc-cache -f
