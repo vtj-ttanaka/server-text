@@ -24,7 +24,7 @@ jobs:
         value: ${{ fromJson(needs.markdown_files.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
-      - uses: docker://ghcr.io/virtualtech-devops/md2pdf-demo:latest
+      - uses: docker://ghcr.io/vtj-ttanaka/server-text:latest
         with:
           args: >-
             -o ${{ matrix.value }}.pdf
